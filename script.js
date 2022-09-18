@@ -7,11 +7,8 @@ const gameBoard = (() =>{
         }
     }
 
-    const winCondition = (player) => {
-        // let indexArray = [];
-        // for (i=0;i<boardArray.length;i++){
-        //     indexArray.push(i);
-        // }
+    // To check if a player has won
+    const winCondition = (currentPlayer) => {
         const horizontal = [0,3,6].map(i=>{return[i,i+1,i+2]});
         const vertical = [0,1,2].map(i=>{return[i,i+3,i+6]});
         const diagonal = [[0,4,8],[2,4,6]];
@@ -23,28 +20,29 @@ const gameBoard = (() =>{
         boardArray[indices[2]] == `${currentPlayer.marker}`)}) 
         return res;
     }
-    return {boardArray,cells,render, winCondition};
+
+    //Reset button
+    const resetButton = document.querySelector(".reset");
+    resetButton.addEventListener("click", ()=> {
+        for(i=0;i<boardArray.length;i++){
+            boardArray[i] = "";
+        }
+        render();
+    })
+    return {boardArray,cells,render, winCondition, resetButton};
 })();
 
 
 const Player = ((name, marker)=>{
     this.name = name;
     this.marker = marker;
-    // const playerSelection = (board,cell) => {
-    //     const index = board.cells.findIndex(position => position === cell);  
-    //     if (board.cells.boardArray[index] === "") {
-    //         board.render();
-    //         return index;
-    //     }
-    //     return null;
-    // }
 
-    //for each of the cell, we add an event listener where if you click, and the cell is empty, you add the marker to cell.
-
+    //For each of the cell, we add an event listener where if you click, and the cell is empty, you add the marker to cell.
     let cells = Array.from(document.querySelectorAll(".cell"));
     const playerSelection = cells.forEach((cell) => cell.addEventListener("click", function(e) {
         let index = gameBoard.boardArray.indexOf.call(cells,e.target);
         if (e.target.innerHTML==="") {
+            //To alternate between the two players.
             if(currentPlayer === playerOne){
                 currentPlayer = playerTwo;
                 e.target.innerHTML = `${currentPlayer.marker}`;
@@ -55,9 +53,17 @@ const Player = ((name, marker)=>{
                 e.target.innerHTML = `${currentPlayer.marker}`;
                 gameBoard.boardArray[index] = `${currentPlayer.marker}`;
             }
+
+            //Check and alert which player has won.
             if(gameBoard.winCondition(currentPlayer) === true) {
                 alert(`${currentPlayer.name} has won!`);
+            }
+
+            else if (gameBoard.winCondition(currentPlayer) === false && 
+            gameBoard.boardArray.filter(element => element !== "").length === gameBoard.boardArray.length){
+                alert("Tie");
             };
+            
         }
         return null;
     }))
