@@ -29,7 +29,7 @@ const gameBoard = (() =>{
         }
         render();
     })
-    return {boardArray,cells,render, winCondition, resetButton};
+    return {boardArray,cells,render, winCondition};
 })();
 
 
